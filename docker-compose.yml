@@ -1,0 +1,22 @@
+version: "3"
+services:
+  phyrexia-telegram-bot:
+    container_name: phyrexia-telegram-bot
+    hostname: phyrexia-telegram-bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=5013396224:AAElKYyvqw6L8IoaNYdpv0ps08QE1VOdP-M
+      - LOG_LEVEL=INFO
+      - CHAT_ID=-844295486
+      - RSS_DELAY=60
+    build:
+      context: ./
+    image: phyrexia-telegram-bot
+    networks:
+      - phyrexia
+    volumes:
+      - ./database:/usr/src/app/database/
+      - ./replies:/usr/src/app/replies/
+networks:
+  phyrexia:
+    external:
+      name: phyrexia
