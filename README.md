@@ -1,1 +1,1 @@
-# crypto-bot
+# crypto-telegram-bot
