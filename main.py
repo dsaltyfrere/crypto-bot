@@ -6,6 +6,7 @@ from telegram import __version__ as TG_VER
 from telegram.ext import Application, CommandHandler
 
 from commands.start import start as start
+from commands.fear import fear as fear
 from commands.feeds.list_feeds import list_feeds as list
 from commands.feeds.add_feed import add_feed as add
 from commands.feeds.remove_feed import remove_feed as remove
@@ -72,9 +73,9 @@ def main() -> None:
     application = Application.builder().token(token).build()
 
     #Add handlers
-
-    #RSS
     application.add_handler(CommandHandler(["start", "help"], start))
+    application.add_handler(CommandHandler(["fear"], fear))
+    #RSS
     application.add_handler(CommandHandler(["list_feeds", "lf"], list))
     application.add_handler(CommandHandler(["remove_feed", "rf"], remove))
     application.add_handler(CommandHandler(["edit_feed", "ef"], edit))
