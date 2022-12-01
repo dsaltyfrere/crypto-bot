@@ -5,6 +5,9 @@ services:
     hostname: phyrexia-telegram-bot
     environment:
       - TELEGRAM_BOT_TOKEN=5013396224:AAElKYyvqw6L8IoaNYdpv0ps08QE1VOdP-M
+      - WHALEPOOL_API_KEY=c2tvNKioPnUjMXenYAp1qRAjbvvpKQI1
+      - WHALEPOOL_MIN_VALUE=40000000
+      - WHALEPOOL_DELAY=90
       - LOG_LEVEL=INFO
       - CHAT_ID=-844295486
       - RSS_DELAY=60

@@ -1,7 +1,7 @@
 import datetime
 
-from .base_model import BaseModel, db
-from .feed import Feed
+from models.base_model import BaseModel, db
+from models.feeds.feed import Feed
 from peewee import ForeignKeyField, CharField, BooleanField, DateTimeField
 
 

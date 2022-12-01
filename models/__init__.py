@@ -1,6 +1,6 @@
 from models.base_model import initialize_db
-from models.feed import Feed
-from models.entry import FeedEntry
+from models.feeds.feed import Feed
+from models.feeds.entry import FeedEntry
 
 
 initialize_db([Feed, FeedEntry])

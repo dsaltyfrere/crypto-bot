@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from models.feed import Feed
+from models.feeds.feed import Feed
 from utils import reply
 
 import logging

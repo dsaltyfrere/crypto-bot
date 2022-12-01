@@ -1,9 +1,29 @@
 #!/usr/bin/env python
-
 import logging
 import os
 
 from telegram import __version__ as TG_VER
+from telegram.ext import Application, CommandHandler
+
+from commands.start import start as start
+from commands.feeds.list_feeds import list_feeds as list
+from commands.feeds.add_feed import add_feed as add
+from commands.feeds.remove_feed import remove_feed as remove
+from commands.feeds.edit_feed import edit_feed as edit
+
+from models.base_model import db
+from models.feeds.feed import Feed
+from models.feeds.entry import FeedEntry
+
+from models.whalepool.symbol import WhalepoolTransactionSymbol
+from models.whalepool.transaction import WhalepoolTransaction
+from models.whalepool.transaction_type import WhalepoolTransactionType
+from models.whalepool.high_low import HighLow
+from models.whalepool.olhc import Olhc
+from models.whalepool.ticker import Ticker
+
+from jobs.rss_monitor import rss_monitor
+from jobs.whalepool import whalepool_alert
 
 try:
     from telegram import __version_info__
@@ -17,27 +37,22 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 
-from telegram.ext import Application, CommandHandler
-from commands.start import start
-
-from models.base_model import db
-from models.feed import Feed
-from models.entry import FeedEntry
-
-from commands.feeds.list_feeds import list_feeds as list
-from commands.feeds.add_feed import add_feed as add
-from commands.feeds.remove_feed import remove_feed as remove
-from commands.feeds.edit_feed import edit_feed as edit
-
-from jobs.rss_monitor import rss_monitor
-
 #Enable logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 logger = logging.getLogger()
 
-db.create_tables([Feed, FeedEntry])
+db.create_tables([
+    Feed,
+    FeedEntry,
+    HighLow,
+    Olhc,
+    Ticker,
+    WhalepoolTransactionType,
+    WhalepoolTransaction,
+    WhalepoolTransactionSymbol,
+])
 
 def main() -> None:
     token = os.getenv("TELEGRAM_BOT_TOKEN", None)
@@ -60,7 +75,8 @@ def main() -> None:
     # Jobs
     job_queue = application.job_queue
 
-    job_queue.run_repeating(rss_monitor, int(os.getenv("RSS_INTERVAL", 90)), name='rss-monitor')  
+    job_queue.run_repeating(rss_monitor, int(os.getenv("RSS_INTERVAL", 90)), name='rss-monitor')
+    job_queue.run_repeating(whalepool_alert, int(os.getenv("WHALEPOOL_DELAY", 90)), name="whalepool-alert") 
 
     application.run_polling()
 

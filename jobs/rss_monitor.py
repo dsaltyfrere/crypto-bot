@@ -7,8 +7,10 @@ from telegram.constants import ParseMode
 
 from datetime import datetime
 
-from models.feed import Feed
-from models.entry import FeedEntry
+from models.feeds.feed import Feed
+from models.feeds.entry import FeedEntry
+
+from html import escape
 
 
 logger = logging.getLogger(__name__)
@@ -67,9 +69,10 @@ async def rss_monitor(context: ContextTypes.DEFAULT_TYPE) -> None:
 
             for message in response_messages:
                 try:
-                    entry = FeedEntry.get_or_none(FeedEntry.entry_link == message['link'], FeedEntry.entry_title == message['title'])
+                    entry = FeedEntry.get_or_none(FeedEntry.entry_title == message['title'])
                 except TypeError as te:
                     logger.error(f"Provided input to search for FeedEntry is invalid: feed {feed.feed_name}")
+                    logger.debug(te, exc_info=True)
                 
                 if entry is None:
                     logger.info(f"New message for {feed.feed_name} found: {message['title']}")
@@ -81,7 +84,7 @@ async def rss_monitor(context: ContextTypes.DEFAULT_TYPE) -> None:
                         send = 0
                     )
                     feed_entry.save()
-                    response = f"<b>{feed.feed_name}</b>: <a href='{feed_entry.entry_link}'>{feed_entry.entry_title}</a>\n{datetime.strptime(feed_entry.entry_published_at, feed.feed_datetime_regex).strftime('%d/%m/%Y %H:%M:%S')}."
+                    response = f"<b>{feed.feed_name}</b>: <a href='{feed_entry.entry_link}'>{escape(feed_entry.entry_title, quote=True)}</a> - {datetime.strptime(feed_entry.entry_published_at, feed.feed_datetime_regex).strftime('%d/%m/%Y %H:%M:%S') if feed.feed_datetime_regex is not None else feed_entry.entry_published_at}."
                     await context.bot.send_message(
                         chat_id = os.getenv("CHAT_ID", None),
                         text = response,

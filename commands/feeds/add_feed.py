@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from utils import reply
-from models.feed import Feed
+from models.feeds.feed import Feed
 
 import logging
 logger = logging.getLogger(__name__)
@@ -26,6 +26,5 @@ async def add_feed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 preview = False
             )
             response = f"Subscribed to [{args[0]}]({args[1]})"
-            logger.info(response)
             await reply(update, response)
         
