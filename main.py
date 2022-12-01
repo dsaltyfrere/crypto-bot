@@ -10,6 +10,12 @@ from commands.feeds.list_feeds import list_feeds as list
 from commands.feeds.add_feed import add_feed as add
 from commands.feeds.remove_feed import remove_feed as remove
 from commands.feeds.edit_feed import edit_feed as edit
+from commands.whalepool.symbol.add_whalepool_symbol import add_whalepool_symbol
+from commands.whalepool.symbol.list_whalepool_symbol import list_whalepool_symbol
+from commands.whalepool.symbol.remove_whalepool_symbol import remove_whalepool_symbol
+from commands.whalepool.type.add_whalepool_transaction_type import add_whalepool_transaction_type
+from commands.whalepool.type.list_whalepool_transaction_type import list_whalepool_transaction_type
+from commands.whalepool.type.remove_whalepool_transaction_type import remove_whalepool_transaction_type
 
 from models.base_model import db
 from models.feeds.feed import Feed
@@ -24,6 +30,7 @@ from models.whalepool.ticker import Ticker
 
 from jobs.rss_monitor import rss_monitor
 from jobs.whalepool import whalepool_alert
+from jobs.olhc import olhc
 
 try:
     from telegram import __version_info__
@@ -69,14 +76,23 @@ def main() -> None:
     application.add_handler(CommandHandler(["list_feeds", "lf"], list))
     application.add_handler(CommandHandler(["remove_feed", "rf"], remove))
     application.add_handler(CommandHandler(["edit_feed", "ef"], edit))
-    application.add_handler(CommandHandler(["add_feed", "af"], add))  
+    application.add_handler(CommandHandler(["add_feed", "af"], add))
+
+    # Whalepool
+    application.add_handler(CommandHandler(["add_whalepool_symbol", "aws"], add_whalepool_symbol))
+    application.add_handler(CommandHandler(["list_whalepool_symbol", "lws"], list_whalepool_symbol))
+    application.add_handler(CommandHandler(["remove_whalepool_symbol", "rws"], remove_whalepool_symbol))
+    application.add_handler(CommandHandler(["add_whalepool_transaction_type", "awtt"], add_whalepool_transaction_type))
+    application.add_handler(CommandHandler(["list_whalepool_transaction_type", "lwtt"], list_whalepool_transaction_type))
+    application.add_handler(CommandHandler(["remove_whalepool_transaction_type", "rwtt"], remove_whalepool_transaction_type))
 
 
     # Jobs
     job_queue = application.job_queue
 
     job_queue.run_repeating(rss_monitor, int(os.getenv("RSS_INTERVAL", 90)), name='rss-monitor')
-    job_queue.run_repeating(whalepool_alert, int(os.getenv("WHALEPOOL_DELAY", 90)), name="whalepool-alert") 
+    job_queue.run_repeating(whalepool_alert, int(os.getenv("WHALEPOOL_DELAY", 90)), name="whalepool-alert")
+    job_queue.run_repeating(olhc, int(os.getenv("HILO_DELAY", 90)), name='olhc')
 
     application.run_polling()
 
