@@ -16,6 +16,8 @@ from commands.whalepool.symbol.remove_whalepool_symbol import remove_whalepool_s
 from commands.whalepool.type.add_whalepool_transaction_type import add_whalepool_transaction_type
 from commands.whalepool.type.list_whalepool_transaction_type import list_whalepool_transaction_type
 from commands.whalepool.type.remove_whalepool_transaction_type import remove_whalepool_transaction_type
+from commands.jobs.list_jobs import list_jobs
+from commands.jobs.update_job import update_job
 
 from models.base_model import db
 from models.feeds.feed import Feed
@@ -86,8 +88,11 @@ def main() -> None:
     application.add_handler(CommandHandler(["list_whalepool_transaction_type", "lwtt"], list_whalepool_transaction_type))
     application.add_handler(CommandHandler(["remove_whalepool_transaction_type", "rwtt"], remove_whalepool_transaction_type))
 
-
     # Jobs
+    application.add_handler(CommandHandler(["list_jobs", "lj"], list_jobs))
+    application.add_handler(CommandHandler(["update_job", "uj"], update_job))
+
+    # Job queue
     job_queue = application.job_queue
 
     job_queue.run_repeating(rss_monitor, int(os.getenv("RSS_INTERVAL", 90)), name='rss-monitor')
