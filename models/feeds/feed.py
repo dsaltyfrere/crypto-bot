@@ -7,7 +7,7 @@ class Feed(BaseModel):
     feed_url = CharField()
     feed_fetch_attempts = IntegerField(default = 0)
     feed_enabled = BooleanField(default = True)
-    feed_hash = CharField()
+    feed_hash = CharField(null=True)
     feed_datetime_regex = CharField(null=True)
 
     class Meta:

@@ -8,7 +8,7 @@ class BitcoinDifficultyAdjustment(BaseModel):
     remaining_blocks = IntegerField()
     remaining_time = IntegerField()
     previous_retarget = DecimalField()
-    next_regarget_height = IntegerField()
+    next_retarget_height = IntegerField()
     time_average = IntegerField()
     time_offset = IntegerField
 

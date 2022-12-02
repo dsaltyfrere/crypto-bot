@@ -20,7 +20,7 @@ async def olhc(context):
         logger.info(f"{ticker} | open: {open} - low: {low} - high: {high}")
 
         # Check if there is a last record, if there is none, created it and continue
-        if Olhc.select().where(Olhc.ticker == ticker).count() is 0:
+        if Olhc.select().where(Olhc.ticker == ticker).count() == 0:
             logger.info(f'No records in db for {ticker}, must be first time use.')
             Olhc.create(
                 open = open,

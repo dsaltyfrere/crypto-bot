@@ -7,7 +7,7 @@ import json
 from telegram import Update
 from telegram.ext import ContextTypes
 from telegram.constants import ParseMode
-from telegram.error import Unauthorized, BadRequest
+from telegram.error import BadRequest
 from telegram.helpers import escape_markdown
 
 

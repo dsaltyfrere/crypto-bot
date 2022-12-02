@@ -2,11 +2,10 @@
 import logging
 import os
 import pytz
-import datetime
 
+from datetime import datetime
 from telegram import __version__ as TG_VER
-from telegram.ext import Application, CommandHandler
-from telegram.ext.filters import Filters
+from telegram.ext import Application, CommandHandler, filters
 
 from commands.start import start as start
 from commands.fear import fear as fear
@@ -100,7 +99,7 @@ def main() -> None:
         )
 
     application = Application.builder().token(token).build()
-    filter = Filters.user(username=('@phyrxia'))
+    filter = filters.User(username='phyrxia')
 
     #Add handlers
     application.add_handler(CommandHandler(["start", "help"], start, filters=filter))
@@ -118,7 +117,7 @@ def main() -> None:
     application.add_handler(CommandHandler(["remove_whalepool_symbol", "rws"], remove_whalepool_symbol, filters=filter))
     application.add_handler(CommandHandler(["add_whalepool_transaction_type", "awtt"], add_whalepool_transaction_type, filters=filter))
     application.add_handler(CommandHandler(["list_whalepool_transaction_type", "lwtt"], list_whalepool_transaction_type, filters=filter))
-    application.add_handler(CommandHandler(["remove_whalepool_transaction_type", "rwtt"], remove_whalepool_transaction_type, filters=filter))
+    #application.add_handler(CommandHandler(["remove_whalepool_transaction_type", "rwtt"], remove_whalepool_transaction_type, filters=filter))
 
     # Jobs
     application.add_handler(CommandHandler(["list_jobs", "lj"], list_jobs, filters=filter))
@@ -134,11 +133,11 @@ def main() -> None:
     job_queue.run_repeating(rss_monitor, int(os.getenv("RSS_INTERVAL", 90)), name='rss-monitor')
     job_queue.run_repeating(whalepool_alert, int(os.getenv("WHALEPOOL_DELAY", 90)), name="whalepool-alert")
     job_queue.run_repeating(olhc, int(os.getenv("HILO_DELAY", 90)), name='olhc')
-    job_queue.run_repeating(get_difficulty_adjustment, int(os.getenv("BITCOIN_DIFFICULTY_ADJUSTMENT", 90)), name='bitcoin-difficulty-adjustment')
+    job_queue.run_repeating(get_difficulty_adjustment, 60*60, name='bitcoin-difficulty-adjustment')
 
     # Run monthly
-    job_queue.run_monthly(get_pools, datetime.now(pytz).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), day=1)
-    job_queue.run_monthly(get_pools_hashrate, datetime.now(pytz).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), day=1)
+    job_queue.run_monthly(get_pools, datetime.now(pytz.utc).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), day=1)
+    job_queue.run_monthly(get_pools_hashrate, datetime.now(pytz.utc).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), day=1)
     
     # Run daily
     job_queue.run_daily(get_block_fees, datetime.now(pytz.utc).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), days=(0,))
