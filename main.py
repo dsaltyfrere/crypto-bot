@@ -35,6 +35,8 @@ from jobs.rss_monitor import rss_monitor
 from jobs.whalepool import whalepool_alert
 from jobs.olhc import olhc
 
+from utils import error_handler
+
 try:
     from telegram import __version_info__
 except ImportError:
@@ -93,6 +95,9 @@ def main() -> None:
     # Jobs
     application.add_handler(CommandHandler(["list_jobs", "lj"], list_jobs))
     application.add_handler(CommandHandler(["update_job", "uj"], update_job))
+
+    # Error handler
+    application.add_error_handler(error_handler)
 
     # Job queue
     job_queue = application.job_queue
