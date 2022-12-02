@@ -7,6 +7,7 @@ from models.whalepool.symbol import WhalepoolTransactionSymbol
 logger = logging.getLogger(__name__)
 
 async def remove_whalepool_symbol(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.info(f"remove_whalepool_symbol by {update.effective_user.username}")
     try:
         context.args[0]
         symbol = WhalepoolTransactionSymbol.get_or_none(symbol = context.args[0])

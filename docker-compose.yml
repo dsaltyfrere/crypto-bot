@@ -4,6 +4,7 @@ services:
     container_name: phyrexia-telegram-bot
     hostname: phyrexia-telegram-bot
     environment:
+      - DEVELOPER_CHAT_ID=329592175
       - TELEGRAM_BOT_TOKEN=5013396224:AAElKYyvqw6L8IoaNYdpv0ps08QE1VOdP-M
       - WHALEPOOL_API_KEY=c2tvNKioPnUjMXenYAp1qRAjbvvpKQI1
       - WHALEPOOL_MIN_VALUE=40000000

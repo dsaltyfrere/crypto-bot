@@ -4,7 +4,10 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from apscheduler.triggers.interval import IntervalTrigger
 
+logger = logging.getLogger(__name__)
+
 async def update_job(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.info(f"update_job by {update.effective_user.username}")
     try:
         context.args[0]
     except IndexError:
