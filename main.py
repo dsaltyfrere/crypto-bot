@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import logging
 import os
+import pytz
+import datetime
 
 from telegram import __version__ as TG_VER
 from telegram.ext import Application, CommandHandler
@@ -25,6 +27,13 @@ from models.base_model import db
 from models.feeds.feed import Feed
 from models.feeds.entry import FeedEntry
 
+from models.bitcoin.block_fees import BitcoinBlockFees
+from models.bitcoin.difficulty_adjustment import BitcoinDifficultyAdjustment
+from models.bitcoin.pool import BitcoinPool
+from models.bitcoin.pool_hashrate import BitcoinPoolHashrate
+
+from models.bitcoin.lightning.lightning_network_stat import LightningNetworkStat
+
 from models.whalepool.symbol import WhalepoolTransactionSymbol
 from models.whalepool.transaction import WhalepoolTransaction
 from models.whalepool.transaction_type import WhalepoolTransactionType
@@ -35,6 +44,13 @@ from models.whalepool.ticker import Ticker
 from jobs.rss_monitor import rss_monitor
 from jobs.whalepool import whalepool_alert
 from jobs.olhc import olhc
+
+from jobs.bitcoin.get_difficulty_adjustment import get_difficulty_adjustment
+from jobs.bitcoin.get_block_fees import get_block_fees
+from jobs.bitcoin.get_pools_hashrate import get_pools_hashrate
+from jobs.bitcoin.get_pools import get_pools
+
+from jobs.bitcoin.lightning.get_network_stats import get_lightning_network_stats
 
 from utils import error_handler
 
@@ -59,12 +75,21 @@ logger = logging.getLogger()
 db.create_tables([
     Feed,
     FeedEntry,
+    
     HighLow,
     Olhc,
     Ticker,
+
     WhalepoolTransactionType,
     WhalepoolTransaction,
     WhalepoolTransactionSymbol,
+
+    BitcoinBlockFees,
+    BitcoinPoolHashrate,
+    BitcoinPool,
+    BitcoinDifficultyAdjustment,
+
+    LightningNetworkStat
 ])
 
 def main() -> None:
@@ -105,10 +130,21 @@ def main() -> None:
     # Job queue
     job_queue = application.job_queue
 
+    # Run always
     job_queue.run_repeating(rss_monitor, int(os.getenv("RSS_INTERVAL", 90)), name='rss-monitor')
     job_queue.run_repeating(whalepool_alert, int(os.getenv("WHALEPOOL_DELAY", 90)), name="whalepool-alert")
     job_queue.run_repeating(olhc, int(os.getenv("HILO_DELAY", 90)), name='olhc')
+    job_queue.run_repeating(get_difficulty_adjustment, int(os.getenv("BITCOIN_DIFFICULTY_ADJUSTMENT", 90)), name='bitcoin-difficulty-adjustment')
 
+    # Run monthly
+    job_queue.run_monthly(get_pools, datetime.now(pytz).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), day=1)
+    job_queue.run_monthly(get_pools_hashrate, datetime.now(pytz).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), day=1)
+    
+    # Run daily
+    job_queue.run_daily(get_block_fees, datetime.now(pytz.utc).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), days=(0,))
+    job_queue.run_daily(get_difficulty_adjustment, datetime.now(pytz.utc).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), days=(0,1,2,3,4,5,6))
+    job_queue.run_daily(get_lightning_network_stats, datetime.now(pytz.utc).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc), days=(0,1,2,3,4,5,6))
+    
     application.run_polling()
 
 if __name__ == "__main__":
