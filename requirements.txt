@@ -1,5 +1,6 @@
 anyio==3.6.2
 APScheduler==3.6.3
+aiolimiter~=1.0.0
 cachetools==4.2.2
 certifi==2022.9.24
 charset-normalizer==2.1.1

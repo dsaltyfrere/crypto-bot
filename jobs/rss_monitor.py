@@ -79,17 +79,20 @@ async def rss_monitor(context: ContextTypes.DEFAULT_TYPE) -> None:
                     feed_entry = FeedEntry.create(
                         feed = feed.id,
                         entry_title = message['title'],
-                        entry_link = message['link'],
+                        entry_link = message['link'] if feed.feed_name != 'CoinDesk' else message['link'][0],
                         entry_published_at = message['pubDate'] if message['pubDate'] else None,
                         send = 0
                     )
                     feed_entry.save()
-                    response = f"<b>{feed.feed_name}</b>: <a href='{feed_entry.entry_link}'>{escape(feed_entry.entry_title, quote=True)}</a> - {datetime.strptime(feed_entry.entry_published_at, feed.feed_datetime_regex).strftime('%d/%m/%Y %H:%M:%S') if feed.feed_datetime_regex is not None else feed_entry.entry_published_at}."
+                    logger.debug(f"Escaped message: {escape(feed_entry.entry_title, quote=True)}")
+                    response = f'<b>{feed.feed_name}</b>: <a href="{feed_entry.entry_link}">{escape(feed_entry.entry_title, quote=True)}</a> - {datetime.strptime(feed_entry.entry_published_at, feed.feed_datetime_regex).strftime("%d/%m/%Y %H:%M:%S") if feed.feed_datetime_regex is not None else feed_entry.entry_published_at}'
                     await context.bot.send_message(
                         chat_id = os.getenv("CHAT_ID", None),
                         text = response,
                         parse_mode=ParseMode.HTML,
-                        disable_web_page_preview = feed.feed_preview
+                        disable_web_page_preview = feed.feed_preview,
+                        read_timeout=10,
+                        write_timeout=10
                     )
 
                     feed_entry.send = 1

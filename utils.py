@@ -48,4 +48,4 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         )
 
         # Finally, send the message
-        context.bot.send_message(chat_id=developer_chat_id, text=message, parse_mode=ParseMode.HTML)
+        await context.bot.send_message(chat_id=developer_chat_id, text=message, parse_mode=ParseMode.HTML)

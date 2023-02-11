@@ -17,7 +17,7 @@ async def olhc(context):
         open = int(float(response.json()['open']))
         high = int(float(response.json()['high']))
         low = int(float(response.json()['low']))
-        logger.info(f"{ticker} | open: {open} - low: {low} - high: {high}")
+        logger.debug(f"{ticker} | open: {open} - low: {low} - high: {high}")
 
         # Check if there is a last record, if there is none, created it and continue
         if Olhc.select().where(Olhc.ticker == ticker).count() == 0:
@@ -31,7 +31,7 @@ async def olhc(context):
             continue
         
         last = Olhc.select().where(Olhc.ticker == ticker).order_by(Olhc.id.desc()).get()
-        logger.info(f"last: {last.to_string}")
+        logger.debug(f"last: {last.to_string}")
         symbol = '฿' if ticker == 'btcusd' else 'Ξ'
         
         if open != last.open:
@@ -67,7 +67,7 @@ async def olhc(context):
             return
         elif low < last.low:
             p ='{0:,}'.format(low)
-            message = f"new {symbol} daily low high: ${p}"
+            message = f"new {symbol} daily low: ${p}"
             logger.info(message)
             Olhc.create(
                 open = open,
