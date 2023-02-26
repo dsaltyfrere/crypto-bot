@@ -61,9 +61,9 @@ async def whalepool_alert(context):
                         emoji = "🔥"
                         action = "burned"
                         tail = f' at {f}'
-                    amount = '{:,.2f}'.format(transaction["amount"]).replace('.', '\.')
-                    amount_usd = '{:,.2f}'.format(transaction["amount_usd"]).replace('.', '\.')
-                    message = f"{emoji} {amount.split('.')[0]} \# {transaction['symbol'].upper()} \({amount_usd.split('.')[0]} USD\) {action} {tail} [—link](https://whale-alert.io/transaction/{transaction['blockchain']}/{transaction['hash']})"
+                    amount = '{:,.2f}'.format(transaction["amount"]).replace('.', '\\.')
+                    amount_usd = '{:,.2f}'.format(transaction["amount_usd"]).replace('.', '\\.')
+                    message = f"{emoji} {amount.split('.')[0]} \\# {transaction['symbol'].upper()} \\({amount_usd.split('.')[0]} USD\\) {action} {tail} [—link](https://whale-alert.io/transaction/{transaction['blockchain']}/{transaction['hash']})"
                     logger.info(message)
                     WhalepoolTransaction.create(
                         id = trans["id"],

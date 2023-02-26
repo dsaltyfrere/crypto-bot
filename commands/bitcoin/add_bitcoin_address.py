@@ -1,7 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from utils import reply
-from models.feeds.feed import Feed
 from models.bitcoin.address import BitcoinAddress
 
 import logging
@@ -14,7 +13,7 @@ async def add_bitcoin_address(update: Update, context: ContextTypes.DEFAULT_TYPE
         response = f"Not enough arguments provided"
         await reply(update, response)
     else:
-        if BitcoinAddress.select().where(BitcoinAddress.bitcoin_address == args[1]).exists():
+        if BitcoinAddress.select().where(BitcoinAddress.bitcoin_address == args[0]).exists():
             response = f"Can't add duplicate bitcoin address"
             await reply(update, response)
         else:

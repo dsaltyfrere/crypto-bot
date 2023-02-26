@@ -1,11 +1,9 @@
-import datetime
 import requests
 import logging
 import os
 
 from models.bitcoin.address_utxo_status import BitcoinAddressUtxoStatus
 from models.bitcoin.address_utxo import BitcoinAddressUtxo
-from models.bitcoin.block_fees import BitcoinBlockFees
 from models.bitcoin.address import BitcoinAddress
 from telegram.constants import ParseMode
 

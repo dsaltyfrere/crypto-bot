@@ -13,6 +13,8 @@ services:
       - LOG_LEVEL=INFO
       - CHAT_ID=-844295486
       - RSS_DELAY=60
+      - MORALIS_API_KEY=iTdfsMAOQgQegID0lxan0OC9QsKkBjxhOIkzAvalE3e8QTZ0OuEaUIGaQ9iaeHxW
+      - ETHEREUM_CHAIN=goerli
     build:
       context: ./
     image: phyrexia-telegram-bot

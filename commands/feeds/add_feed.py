@@ -27,4 +27,3 @@ async def add_feed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             )
             response = f"Subscribed to [{args[0]}]({args[1]})"
             await reply(update, response)
-        

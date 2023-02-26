@@ -5,7 +5,7 @@ import pytz
 
 from datetime import datetime
 from telegram import __version__ as TG_VER
-from telegram.ext import Application, CommandHandler, filters, AIORateLimiter
+from telegram.ext import Application, CommandHandler, filters, AIORateLimiter, MessageHandler
 
 from commands.start import start as start
 from commands.fear import fear as fear
@@ -25,6 +25,11 @@ from commands.whalepool.type.remove_whalepool_transaction_type import remove_wha
 from commands.bitcoin.add_bitcoin_address import add_bitcoin_address
 from commands.bitcoin.remove_bitcoin_address import remove_bitcoin_address
 from commands.bitcoin.list_bitcoin_address import list_bitcoin_address
+
+from commands.ethereum.add_ethereum_address import add_ethereum_address
+from commands.ethereum.remove_ethereum_address import remove_ethereum_address
+from commands.ethereum.list_ethereum_address import list_ethereum_address
+from commands.ethereum.list_ethereum_address_erc20_balances import list_ethereum_address_erc20_balances
 
 from commands.jobs.list_jobs import list_jobs
 from commands.jobs.update_job import update_job
@@ -51,6 +56,10 @@ from models.whalepool.high_low import HighLow
 from models.whalepool.olhc import Olhc
 from models.whalepool.ticker import Ticker
 
+
+from models.ethereum.address import EthereumAddress
+from models.ethereum.address_token_balance import EthereumAddressTokenBalance
+
 from jobs.rss_monitor import rss_monitor
 from jobs.whalepool import whalepool_alert
 from jobs.olhc import olhc
@@ -59,12 +68,13 @@ from jobs.bitcoin.get_difficulty_adjustment import get_difficulty_adjustment
 from jobs.bitcoin.get_block_fees import get_block_fees
 from jobs.bitcoin.get_pools_hashrate import get_pools_hashrate
 from jobs.bitcoin.get_pools import get_pools
-
 from jobs.bitcoin.get_bitcoin_address_utxo import get_bitcoin_address_utxo
-
 from jobs.bitcoin.lightning.get_network_stats import get_lightning_network_stats
 
+from jobs.ethereum.get_erc20_balance_by_wallet import get_erc20_balance_by_wallet
+
 from utils import error_handler
+
 
 try:
     from telegram import __version_info__
@@ -105,11 +115,15 @@ db.create_tables([
 
     LightningNetworkStat,
 
+    EthereumAddress,
+    EthereumAddressTokenBalance,
+
     BitcoinAddress,
     BitcoinAddressUtxo,
     BitcoinAddressUtxoStatus
 
 ])
+
 
 def main() -> None:
     token = os.getenv("TELEGRAM_BOT_TOKEN", None)
@@ -144,10 +158,18 @@ def main() -> None:
     application.add_handler(CommandHandler(["list_bitcoin_address", "lba"], list_bitcoin_address, filters=filter))
     application.add_handler(CommandHandler(["remove_bitcoin_address", "rba"], remove_bitcoin_address, filters=filter))
 
+    # Ethereum
+    application.add_handler(CommandHandler(["add_ethereum_address", "aea"], add_ethereum_address, filters=filter))
+    application.add_handler(CommandHandler(["list_ethereum_address", "lea"], list_ethereum_address, filters=filter))
+    application.add_handler(CommandHandler(["remove_ethereum_address", "rea"], remove_ethereum_address, filters=filter))
+
+    application.add_handler(CommandHandler(["list_erc20_balances", "lerc20b"], list_ethereum_address_erc20_balances, filters=filter))
+
 
     # Jobs
     application.add_handler(CommandHandler(["list_jobs", "lj"], list_jobs, filters=filter))
     application.add_handler(CommandHandler(["update_job", "uj"], update_job, filters=filter))
+
 
     # Error handler
     application.add_error_handler(error_handler)
@@ -161,6 +183,8 @@ def main() -> None:
     job_queue.run_repeating(olhc, int(os.getenv("HILO_DELAY", 90)), name='olhc')
     job_queue.run_repeating(get_difficulty_adjustment, 60*60, name='bitcoin-difficulty-adjustment')
     job_queue.run_repeating(get_bitcoin_address_utxo, 60, name='bitcoin-address-utxo')
+
+    job_queue.run_repeating(get_erc20_balance_by_wallet, 180, name='ethereum-address-monitor')
 
     # Run monthly
     job_queue.run_monthly(get_pools, midnight_utc, day=1)
