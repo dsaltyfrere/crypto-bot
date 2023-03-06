@@ -7,6 +7,10 @@ from telegram.ext import ContextTypes
 logger = logging.getLogger(__name__)
 
 async def list_jobs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    List all jobs in the job_queue
+    """
+    
     logger.info(f"list_job by {update.effective_user.username}")
     jobs = context.job_queue.jobs()
     response = '*Scheduled jobs:*\n'

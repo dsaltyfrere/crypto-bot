@@ -7,6 +7,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 async def remove_bitcoin_address(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Remove bitcoin address to monitor from the database.
+    Check whether sufficient parameters are supplied.
+    If not - reply with error message
+    If yes - Remove from database and confirm
+    """
     logger.info(f"Message from {update.effective_user.username}: {update.effective_message.text}")
     args = context.args
     if len(args) < 1:

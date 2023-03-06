@@ -7,6 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 async def add_feed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Add an RSS feed to the database.
+    """
     logger.info(f"Message from {update.effective_user.username}: {update.effective_message.text}")
     args = context.args
     if len(args) < 2:

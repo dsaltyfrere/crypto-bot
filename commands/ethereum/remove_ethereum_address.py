@@ -7,6 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 async def remove_ethereum_address(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Remove ethereum address to monitor from the database.
+    """    
     logger.info(f"Message from {update.effective_user.username}: {update.effective_message.text}")
     args = context.args
     if len(args) < 1:

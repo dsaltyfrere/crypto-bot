@@ -13,6 +13,12 @@ logger = logging.getLogger(__name__)
 api_key = os.getenv("MORALIS_API_KEY", None)
 
 async def add_ethereum_address(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Add an ethereum address to monitor.
+    Check whether sufficient parameters were supplied (eth address is mandatory - alias is optional)
+    If no - reply with error message.
+    if yes - Save address to database, fetch all tokens from ethereum address and save to database.
+    """
     logger.info(f"Message from {update.effective_user.username}: {update.effective_message.text}")
     args = context.args
     if len(args) < 1:
@@ -39,17 +45,19 @@ async def add_ethereum_address(update: Update, context: ContextTypes.DEFAULT_TYP
                 params=params
             )
             for token in result:
-                eatb = EthereumAddressTokenBalance(
-                    ethereum_address = args[0],
-                    ethereum_token_address = token['token_address'],
-                    ethereum_token_name = token['name'],
-                    ethereum_token_symbol = token['symbol'],
-                    ethereum_token_logo = token['logo'],
-                    ethereum_token_thumbnail = token['thumbnail'],
-                    ethereum_token_decimals = token['decimals'],
-                    ethereum_token_balance = token['balance']
-                )
-                eatb.save()
+                if float(float(token['balance']) / float(pow(10, token['decimals']))) > 1:
+                    eatb = EthereumAddressTokenBalance(
+                        ethereum_address = args[0],
+                        ethereum_token_address = token['token_address'],
+                        ethereum_token_name = token['name'],
+                        ethereum_token_symbol = token['symbol'],
+                        ethereum_token_logo = token['logo'],
+                        ethereum_token_thumbnail = token['thumbnail'],
+                        ethereum_token_decimals = token['decimals'],
+                        ethereum_token_balance = token['balance'],
+                        ethereum_chain = os.getenv("ETHEREUM_CHAIN", None)
+                    )
+                    eatb.save()
             response =f"Monitoring {args[0]}"
             if ea.ethereum_address_alias:
                 response += f" ({ea.ethereum_address_alias})"

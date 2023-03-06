@@ -7,6 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 async def remove_feed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Remove feed from database.
+    """
     logger.info(f"Message from {update.effective_user.username}: {update.effective_message.text}")
     args = context.args
 

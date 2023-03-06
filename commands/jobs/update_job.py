@@ -7,6 +7,9 @@ from apscheduler.triggers.interval import IntervalTrigger
 logger = logging.getLogger(__name__)
 
 async def update_job(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Edit the crontab schedule of a given job.
+    """
     logger.info(f"update_job by {update.effective_user.username}")
     try:
         context.args[0]

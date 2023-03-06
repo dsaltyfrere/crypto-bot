@@ -7,6 +7,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 async def add_bitcoin_address(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Add a bitcoin address to monitor.
+    Check whether sufficient parameters were supplied to the command
+    If no - reply with error message
+    If yes - add to database and monitor
+    """
     logger.info(f"Message from {update.effective_user.username}: {update.effective_message.text}")
     args = context.args
     if len(args) < 1:

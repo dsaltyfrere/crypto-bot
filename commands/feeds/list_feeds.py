@@ -7,6 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 async def list_feeds(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    List all RSS feeds known in the database.
+    """    
     logger.info(f"Message from {update.effective_user.username}: {update.effective_message.text}")
     feeds = Feed.select()
     if len(feeds) == 0:

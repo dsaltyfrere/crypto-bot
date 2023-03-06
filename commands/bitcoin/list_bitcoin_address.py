@@ -7,6 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 async def list_bitcoin_address(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    List all bitcoin addresses to monitor in the database.
+    """
     logger.info(f"Message from {update.effective_user.username}: {update.effective_message.text}")
 
     addresses = BitcoinAddress.select()

@@ -5,7 +5,7 @@ import pytz
 
 from datetime import datetime
 from telegram import __version__ as TG_VER
-from telegram.ext import Application, CommandHandler, filters, AIORateLimiter, MessageHandler
+from telegram.ext import Application, CommandHandler, filters, AIORateLimiter, MessageHandler, CallbackQueryHandler
 
 from commands.start import start as start
 from commands.fear import fear as fear
@@ -33,6 +33,8 @@ from commands.ethereum.list_ethereum_address_erc20_balances import list_ethereum
 
 from commands.jobs.list_jobs import list_jobs
 from commands.jobs.update_job import update_job
+
+from callbacks.ethereum_callback import ethereum_callback
 
 from models.base_model import db
 from models.feeds.feed import Feed
@@ -165,6 +167,8 @@ def main() -> None:
 
     application.add_handler(CommandHandler(["list_erc20_balances", "lerc20b"], list_ethereum_address_erc20_balances, filters=filter))
 
+    # Callbacks
+    application.add_handler(CallbackQueryHandler(ethereum_callback))
 
     # Jobs
     application.add_handler(CommandHandler(["list_jobs", "lj"], list_jobs, filters=filter))

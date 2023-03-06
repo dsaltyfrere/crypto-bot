@@ -7,6 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 async def edit_feed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Edit an existing RSS feed.
+    """
     logger.info(f"Message from {update.effective_user.username}: {update.effective_message.text}")
     args = context.args
 

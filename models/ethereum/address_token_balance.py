@@ -13,6 +13,7 @@ class EthereumAddressTokenBalance(BaseModel):
     ethereum_token_thumbnail = CharField(null=True)
     ethereum_token_decimals = IntegerField(null=True)
     ethereum_token_balance = CharField(null=True)
+    ethereum_chain = CharField()
 
     class Meta:
         database = db
